@@ -11,8 +11,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 db_client = DynamoDBClient()
 
 @app.get("/getItems")
-def read_root():
-    response = db_client.get_item_values("76E5549434")
+def getItems(id: str, quantity: int):
+    response = db_client.get_item_values(id, quantity)
     return response
 
 

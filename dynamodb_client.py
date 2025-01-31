@@ -22,16 +22,22 @@ class DynamoDBClient:
             if not os.getenv(var):
                 raise ValueError(f"Se necesita esta credencial: {var}")
 
-    def get_item_values(self, device_id):
+    def get_item_values(self, device_id, quantity):
         try:
-            response = self.table.get_item(Key={"ID": device_id})
-            item = response.get("Item")
-            
+            response = self.table.query(
+                KeyConditionExpression="ID = :device_id",
+                ExpressionAttributeValues={
+                    ":device_id": device_id
+                }  ,
+                ScanIndexForward=False,  
+                Limit=quantity
+            )
+            item = response.get("Items")
             if not item:
                 print(f"El item no fue encontrado: {device_id}")
                 return None  
 
-            return item.get("values", "No fueron valores encontrados")
+            return item
         except Exception as e:
             print(f"Error Inesperado: {e}")
             return None
